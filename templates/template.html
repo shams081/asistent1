@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-Capital Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Добавляем направление колонки для центрирования */
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: white;
+        }
+        .assistant-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            text-align: center;
+            margin-top: 20px; /* Добавляем отступ сверху */
+        }
+        .assistant-header {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .chat-box {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #fff;
+            color: #000;
+            border-radius: 5px;
+        }
+        .user-input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .send-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #4ca1af;
+            color: white;
+            cursor: pointer;
+        }
+        .send-btn:hover {
+            background: #357d8e;
+        }
+        video {
+            width: 100%;
+            max-width: 100px; /* Ширина видео равна максимальной ширине контейнера */
+            border-radius: 10px;
+            margin-bottom: 20px; /* Добавляем отступ снизу */
+        }
+    </style>
+</head>
+<body>
+    <video controls autoplay>
+        <source src="templates\video-bg.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="assistant-container">
+        <div class="assistant-header">S-Capital Assistant</div>
+        <div id="chat-box" class="chat-box">
+            <div>Привет! Я S-Capital Assistant. Я здесь, чтобы помочь вам изучить криптовалюту и трейдинг. Задавайте свои вопросы!</div>
+        </div>
+        <input type="text" id="user-input" class="user-input" placeholder="Введите ваш вопрос...">
+        <button onclick="sendQuestion()" class="send-btn">Отправить</button>
+    </div>
+
+    <script>
+        function sendQuestion() {
+            const userInput = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+
+            if (userInput.value.trim() === "") return;
+
+            const userQuestion = document.createElement('div');
+            userQuestion.textContent = "Вы: " + userInput.value;
+            chatBox.appendChild(userQuestion);
+
+            // Отправка вопроса на сервер и получение ответа
+            fetch('/get-answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: userInput.value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const assistantAnswer = document.createElement('div');
+                assistantAnswer.textContent = "S-Capital Assistant: " + data.answer;
+                chatBox.appendChild(assistantAnswer);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            userInput.value = "";
+        }
+    </script>
+</body>
+</html>
